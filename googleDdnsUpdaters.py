@@ -126,7 +126,6 @@ class domainDns(object):
             except KeyboardInterrupt as e:
                 
                 mainLogger.error(e)
-                raise KeyboardInterrupt
             except:
                 mainLogger.warning(f'Error while loading Zone Information')
                 mainLogger.critical(f'{traceback.format_exc()}')
