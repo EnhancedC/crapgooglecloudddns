@@ -156,7 +156,7 @@ class domainDns(object):
         if jsonRecordsFile:
             jsonRecords = jsonRecordsFile['zones'][self.zone.name]
         else:
-            mainLogger.error(f"No Json Records Loaded Retrying in : {self.refreshRate}s")
+            mainLogger.error(f"No Json Records found in recordList.json Retrying in : {self.refreshRate}s")
             return
         
         if self.currentRecords is None or self.pubIp != currentIp or self.currentRecords != jsonRecords:
