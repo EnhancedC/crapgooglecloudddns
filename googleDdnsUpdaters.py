@@ -130,8 +130,6 @@ class domainDns(object):
                 mainLogger.warning(f'Error while loading Zone Information')
                 mainLogger.critical(f'{traceback.format_exc()}')
 
-     
-
 
     @staticmethod
     def getRecordsFromJsonFile() -> dict:
