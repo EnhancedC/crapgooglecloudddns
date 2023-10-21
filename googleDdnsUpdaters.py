@@ -46,7 +46,7 @@ class domainDns(object):
         while True:
             try:
                 self.reloadZone()
-                mainLogger.info('successfully got zone Information')
+                mainLogger.debug('successfully got zone Information')
                 break
             except google.auth.exceptions.TransportError:
                 mainLogger.error('Failed to connect to oauth2.googleapis.com Retrying in 30 Seconds')
@@ -60,7 +60,7 @@ class domainDns(object):
     def getPublicIpAddress():
         while True:
             try:
-                mainLogger.info('Connecting to api.ipify.org to get IP address')
+                mainLogger.debug('Connecting to api.ipify.org to get IP address')
                 ip=get('https://api.ipify.org',timeout=60).content.decode('utf8')
                 socket.inet_aton(ip)
                 mainLogger.debug(f'Public Address ->  {ip}')
@@ -82,7 +82,7 @@ class domainDns(object):
                 mainLogger.critical(f'{traceback.format_exc()}')
 
     def addRecord(self, record:str, type:str, ttl:int, data:list ) -> None:
-        mainLogger.info('Adding new Record\t%s\t%s\t%s\t%s', record,type,ttl,data)
+        mainLogger.debug('Adding new Record\t%s\t%s\t%s\t%s', record,type,ttl,data)
         record=self.zone.resource_record_set(record,type,ttl,data)
         recordChange=self.zone.changes()
         recordChange.add_record_set(record)
@@ -90,20 +90,20 @@ class domainDns(object):
         while recordChange.status != 'done':
             recordChange.reload()
             time.sleep(0.5)
-        mainLogger.info('Successfully added Record')
+        mainLogger.debug('Successfully added Record')
         return
 
     def changeRecord(self, newRecord:dict, OldRecord) -> None:
-        mainLogger.info('Changing Record')
+        mainLogger.debug('Changing Record')
         for record in self.getRecords():
             if newRecord['name'] == record.name and record.record_type == 'A':
                 self.deleteRecord(OldRecord.name,OldRecord.record_type,OldRecord.ttl,OldRecord.rrdatas)
  
         self.addRecord(newRecord['name'],newRecord['type'],newRecord['ttl'],newRecord['data'])
-        mainLogger.info('Record Change complete')
+        mainLogger.debug('Record Change complete')
         
     def deleteRecord(self, record:str, type:str, ttl:int, data:list ) -> None:
-        mainLogger.info('Adding new Record\t%s\t%s', record,type)
+        mainLogger.debug('Deleting new Record\t%s\t%s', record,type)
         currentDdnsRecordInfo=self.zone.resource_record_set(record,type,ttl,data)
         recordChange=self.zone.changes()
         recordChange.delete_record_set(currentDdnsRecordInfo)
@@ -111,7 +111,7 @@ class domainDns(object):
         while recordChange.status != 'done':
             recordChange.reload()
             time.sleep(0.5)
-        mainLogger.info('Successfully deleted Record')
+        mainLogger.debug('Successfully deleted Record')
         return
 
     def getRecords(self) -> list:
@@ -120,7 +120,7 @@ class domainDns(object):
     def reloadZone(self):
         while True:
             try:
-                mainLogger.info("Loading Zone Information")
+                mainLogger.debug("Loading Zone Information")
                 self.zone.reload()
                 return
             except KeyboardInterrupt as e:
@@ -134,7 +134,7 @@ class domainDns(object):
 
     @staticmethod
     def getRecordsFromJsonFile() -> dict:
-        mainLogger.info('Getting record list')
+        mainLogger.debug('Getting record list')
         try:
             if not os.path.isfile("recordList.json"):
                 mainLogger.warning('recordList.json does not exist, creating one')
