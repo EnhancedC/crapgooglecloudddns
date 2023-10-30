@@ -11,18 +11,9 @@ import json
 import re
 import socket
 import logging
+from logging.handlers import TimedRotatingFileHandler
 import platform
 import traceback
-
-
-
-
-
-
-
-
-
-
 
 
 class domainDns(object):
@@ -190,13 +181,6 @@ def main(args):
         time.sleep(args.refreshRate)
 
 
-
-
-
-
-
-
-
 if __name__ == "__main__":
     agsPrs=argparse.ArgumentParser()
     agsPrs.add_argument('-a','--auth',default=None,type=str,help='Location of auth file Must, be Exact')
@@ -210,9 +194,9 @@ if __name__ == "__main__":
     mainLogger = logging.getLogger(__name__)
     loggingFileHandler=logging.StreamHandler()
     if args.logfile != None:
-        loggingClientHandler=logging.FileHandler(os.path.join(args.logfile))
+        loggingClientHandler=TimedRotatingFileHandler(os.path.join(args.logfile),when="midnight",interval=1,backupCount=3)
     else:
-        loggingClientHandler=logging.FileHandler(os.path.join(os.path.splitext(f'/var/log/{os.path.basename(__file__)}')[0]+'.log')) if platform.system() == 'Linux' else logging.FileHandler(os.path.join(os.path.realpath(sys.path[0]),f'{os.path.splitext(os.path.basename(__file__))[0]}'+'.log'))
+        loggingClientHandler=TimedRotatingFileHandler(os.path.join(os.path.splitext(f'/var/log/{os.path.basename(__file__)}')[0]+'.log')) if platform.system() == 'Linux' else logging.FileHandler(os.path.join(os.path.realpath(sys.path[0]),f'{os.path.splitext(os.path.basename(__file__))[0]}'+'.log'),when="midnight",interval=1,backupCount=3)
     
     if args.debug:
         mainLogger.setLevel(logging.DEBUG)
